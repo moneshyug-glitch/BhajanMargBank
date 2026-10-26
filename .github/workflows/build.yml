@@ -26,6 +26,10 @@ jobs:
           cp -rf BhajanMargBank/* .
           cp -rf BhajanMargBank/.* . 2>/dev/null || true
         fi
+        # 🎯 अगर नई IntroActivity.kt बाहर रखी है, तो उसे सही फोल्डर में कॉपी करें
+        if [ -f "IntroActivity.kt" ]; then
+          cp -f IntroActivity.kt app/src/main/java/com/bhajanmarg/app/IntroActivity.kt
+        fi
         chmod +x gradlew
 
     - name: Build Signed APK
