@@ -26,10 +26,27 @@ jobs:
           cp -rf BhajanMargBank/* .
           cp -rf BhajanMargBank/.* . 2>/dev/null || true
         fi
-        # 🎯 अगर नई IntroActivity.kt बाहर रखी है, तो उसे सही फोल्डर में कॉपी करें
         if [ -f "IntroActivity.kt" ]; then
           cp -f IntroActivity.kt app/src/main/java/com/bhajanmarg/app/IntroActivity.kt
         fi
+        
+        # 🎯 Android 13+ POST_NOTIFICATIONS परमिशन को AndroidManifest.xml में जोड़ना
+        python3 -c '
+        path = "app/src/main/AndroidManifest.xml"
+        try:
+            with open(path, "r") as f:
+                s = f.read()
+            if "POST_NOTIFICATIONS" not in s:
+                idx = s.find("<application")
+                if idx != -1:
+                    perm = "    <uses-permission android:name=\"android.permission.POST_NOTIFICATIONS\" />\n"
+                    s = s[:idx] + perm + s[idx:]
+                    with open(path, "w") as f:
+                        f.write(s)
+                    print("✓ POST_NOTIFICATIONS permission added to AndroidManifest.xml!")
+        except Exception as e:
+            print("Manifest update error:", e)
+        '
         chmod +x gradlew
 
     - name: Build Signed APK
